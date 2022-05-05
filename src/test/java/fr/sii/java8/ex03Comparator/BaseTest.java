@@ -7,11 +7,11 @@ import java.util.List;
 
 public class BaseTest {
 
-    protected <T> List<T> sorted(List<T> in, Comparator<T> cmp) {
-        ArrayList<T> cloned = new ArrayList<>(in);
+	protected <T> List<T> sorted(List<T> in, Comparator<T> cmp) {
+		ArrayList<T> cloned = new ArrayList<>(in);
 
-        Collections.sort(cloned, cmp);
+		Collections.sort(cloned, cmp);
 
-        return cloned;
-    }
+		return cloned;
+	}
 }

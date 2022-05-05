@@ -1,320 +1,460 @@
 package fr.sii.java8.ex04Stream;
 
-import java.util.*;
-import java.util.Map.Entry;
-
 import static fr.sii.java8.utils.ExerciceAFaireException.exerciceAFaire;
+import static fr.sii.java8.utils.Tuple.fromEntry;
+import static java.util.Collections.emptyList;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingInt;
+import static java.util.Comparator.reverseOrder;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.partitioningBy;
+import static java.util.stream.Collectors.summarizingInt;
+import static java.util.stream.Collectors.summingInt;
+import static java.util.stream.Collectors.summingLong;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Stream.concat;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IntSummaryStatistics;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.stream.Stream;
+
+import fr.sii.java8.utils.Tuple;
 
 public class ExerciceStream {
 
-    // Personnes n'ayant pas de maision.
-    static List<Person> homeless(List<Person> persons) {
-        return exerciceAFaire("Listez les personnes sans maison");
-    }
+	// Personnes n'ayant pas de maison.
+	static List<Person> homeless(List<Person> persons) {
+		return persons.stream() //
+				.filter(p -> !p.getHouse().isPresent()) //
+				.collect(toList());
+	}
 
-    static Set<Person> personnesTrentenairesImperative(List<Person> persons) {
-        Set<Person> result = new HashSet<>();
+	static Set<Person> personnesTrentenairesImperative(List<Person> persons) {
+		Set<Person> result = new HashSet<>();
 
-        for (Person person : persons) {
-            if ((person.getAge() >= 30) && (person.getAge() < 40)) {
-                result.add(person);
-            }
-        }
+		for (Person person : persons) {
+			if ((person.getAge() >= 30) && (person.getAge() < 40)) {
+				result.add(person);
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    static Set<Person> personnesTrentenairesFunctional(List<Person> persons) {
-        return exerciceAFaire("Listez les personnes trentenaires");
-    }
+	static Set<Person> personnesTrentenairesFunctional(List<Person> persons) {
+		return persons.stream() //
+				.filter(p -> p.getAge() >= 30 && p.getAge() < 40) //
+				.collect(toSet());
+	}
 
-    static int getNombreDeLettresDuPlusVieuxMajeureImperative(List<Person> persons) {
-        Person plusVieux = null;
-        for (Person p : persons) {
-            if ((p.getAge() >= 18) && ((plusVieux == null) || (plusVieux.getAge() < p.getAge()))) {
-                plusVieux = p;
-            }
-        }
+	static List<Person> getThreeOldestPersonsImperative(List<Person> persons) {
+		ArrayList<Person> cloned = new ArrayList<>(persons);
 
-        return plusVieux.getName().length();
-    }
+		Comparator<Person> cmp = Comparator.comparingInt(Person::getAge).reversed();
 
-    static Optional<Integer> getNombreDeLettresDuPlusVieuxMajeureFunctional(List<Person> persons) {
-        return exerciceAFaire("Retournez le nombre de lettre du nom de la plus vieille personne majeure");
-    }
+		Collections.sort(cloned, cmp);
 
-    static Map<Integer, List<Person>> getPersonesByDecadeImperative(List<Person> persons) {
-        Map<Integer, List<Person>> result = new HashMap<>();
+		int i = 0;
+		List<Person> result = new ArrayList<>();
+		for (Iterator<Person> it = cloned.iterator(); it.hasNext() && (i < 3); i++) {
+			result.add(it.next());
+		}
 
-        for (Person person : persons) {
-            int decade = person.getAge() / 10;
-            List<Person> l = result.get(decade);
+		return result;
+	}
 
-            if (l == null) {
-                l = new ArrayList<>();
-                result.put(decade, l);
-            }
-            l.add(person);
-        }
+	static List<Person> getThreeOldestPersonsFunctional(List<Person> persons) {
+		return persons.stream() //
+				.sorted(comparing(Person::getAge).reversed()) //
+				.limit(3) //
+				.collect(toList());
+	}
 
-        return result;
-    }
+	static int getNombreDeLettresDuPlusVieuxMajeureImperative(List<Person> persons) {
+		Person plusVieux = null;
+		for (Person p : persons) {
+			if ((p.getAge() >= 18) && ((plusVieux == null) || (plusVieux.getAge() < p.getAge()))) {
+				plusVieux = p;
+			}
+		}
 
-    static Map<Integer, List<Person>> getPersonesByDecadeFunctional(List<Person> persons) {
-        return exerciceAFaire("Listez les personnes par décénnie");
-    }
+		return plusVieux.getName().length();
+	}
 
-    static Map<Boolean, Set<Person>> personWithOrWithoutGarden(List<Person> persons) {
-        return exerciceAFaire("Groupez les personnes ayant ou non un jardin");
-    }
+	static Optional<Integer> getNombreDeLettresDuPlusVieuxMajeureFunctional(List<Person> persons) {
+		return persons.stream() //
+				.filter(p -> p.getAge() >= 18) //
+				.max(comparing(Person::getAge)) //
+				.map(p -> p.getName().length());
+	}
 
-    static boolean checkAllDepartmentHaveAtLeast10SleepingPlaces(List<Person> persons) {
-        return exerciceAFaire("Vérifiez que tout les département on au moins 10 palces de couchage");
-    }
+	static Map<Integer, List<Person>> getPersonesByDecadeImperative(List<Person> persons) {
+		Map<Integer, List<Person>> result = new HashMap<>();
+
+		for (Person person : persons) {
+			int decade = person.getAge() / 10;
+			List<Person> l = result.get(decade);
+
+			if (l == null) {
+				l = new ArrayList<>();
+				result.put(decade, l);
+			}
+			l.add(person);
+		}
+
+		return result;
+	}
+
+	static Map<Integer, List<Person>> getPersonesByDecadeFunctional(List<Person> persons) {
+		return persons.stream() //
+				.collect(groupingBy(p -> p.getAge() / 10));
+	}
+
+	static Map<Boolean, Set<Person>> personWithOrWithoutGarden(List<Person> persons) {
+		return persons.stream() //
+				.collect(partitioningBy(p -> p.getHouse().flatMap(House::getGarden).isPresent(), toSet()));
+	}
+
+	static boolean checkAllDepartmentHaveAtLeast10SleepingPlaces(List<Person> persons) {
+		return persons.stream() //
+				.collect(groupingBy(Person::getDepartment)) //
+				.entrySet().stream() //
+				.allMatch(kv -> kv.getValue().stream()
+						.flatMap(p -> p.getHouse().map(Stream::of).orElseGet(Stream::empty)) //
+						.flatMap(h -> h.getRooms().stream()) //
+						.flatMap(r -> r.getBeds().stream()) //
+						.mapToInt(Bed::getForPersonCount) //
+						.sum() >= 10);
+	}
 
     static List<Person> personSortedByRoomCountThenBySleepingPlacesCount(List<Person> persons) {
-        Comparator<Person> personCmp = exerciceAFaire("Trouvez le bon Comparator");
+		Comparator<Person> byRoomCount = comparingInt(p -> p.getHouse().map(h -> h.getRooms().size()).orElse(0));
 
-        return exerciceAFaire("Triez les personnes selon le nombre de pièces puis nombre de places de couchage");
+		Comparator<Person> bySleepingPlaces = comparingInt(p -> p.getHouse() //
+				.map(h -> h.getRooms().stream() //
+						.flatMap(r -> r.getBeds().stream()) //
+						.mapToInt(Bed::getForPersonCount) //
+						.sum()) //
+				.orElse(0));
 
-    }
+		Comparator<Person> personCmp = byRoomCount.thenComparing(bySleepingPlaces);
 
-    static int getSleepingPlacesCount(List<Person> persons) {
-        return exerciceAFaire("Comptez le nombre de places de couchage");
-    }
+		return persons.stream() //
+				.sorted(personCmp) //
+				.collect(toList());
+	}
 
-    static long getAllPhysicalBedCountInRoomWithWindowsImperative(List<Person> persons) {
-        long result = 0;
+	static int getSleepingPlacesCount(List<Person> persons) {
+		return persons.stream() //
+				.flatMap(p -> p.getHouse().map(Stream::of).orElseGet(Stream::empty)) //
+				.flatMap(h -> h.getRooms().stream()) //
+				.flatMap(r -> r.getBeds().stream()) //
+				.mapToInt(Bed::getForPersonCount) //
+				.sum();
+	}
 
-        for (Person person : persons) {
-            House house = person.getHouse().orElse(null);
+	static long getAllPhysicalBedCountInRoomWithWindowsImperative(List<Person> persons) {
+		long result = 0;
 
-            if (house != null) {
-                for (Room room : house.getRooms()) {
-                    if (room.getWindowCount() > 0) {
-                        result += room.getBeds().size();
-                    }
-                }
-            }
-        }
+		for (Person person : persons) {
+			House house = person.getHouse().orElse(null);
 
-        return result;
-    }
+			if (house != null) {
+				for (Room room : house.getRooms()) {
+					if (room.getWindowCount() > 0) {
+						result += room.getBeds().size();
+					}
+				}
+			}
+		}
 
-    static long getAllPhysicalBedCountInRoomWithWindowsFunctional(List<Person> persons) {
-        return exerciceAFaire("Comptez le nombre de lit qui sont dans des pièces fenêtrées");
-    }
+		return result;
+	}
 
-    static List<Person> getThreeOldestPersonsImperative(List<Person> persons) {
-        ArrayList<Person> cloned = new ArrayList<>(persons);
+	static long getAllPhysicalBedCountInRoomWithWindowsFunctional(List<Person> persons) {
+		return persons.stream() //
+                .flatMap(p -> p.getHouse().map(Stream::of).orElseGet(Stream::empty)) //
+                .flatMap(h -> h.getRooms().stream()) //
+                .filter(r -> r.getWindowCount() > 0) //
+                .mapToLong(r -> r.getBeds().size()) //
+                .sum();
 
-        Comparator<Person> cmp = new Comparator<Person>() {
-            @Override
-            public int compare(Person o1, Person o2) {
-                return -Integer.compare(o1.getAge(), o2.getAge());
-            }
-        };
+	}
 
-        Collections.sort(cloned, cmp);
+	static Set<Person> personHavingHouseWithWindowInAllRooms(List<Person> persons) {
+		return persons.stream() //
+				.filter(p -> p.getHouse()
+						.filter(h -> h.getRooms().stream() //
+								.allMatch(r -> r.getWindowCount() > 0)) //
+						.isPresent()) //
+				.collect(toSet());
+	}
 
-        int i = 0;
-        List<Person> result = new ArrayList<>();
-        for (Iterator<Person> it = cloned.iterator(); it.hasNext() && (i < 3); i++) {
-            result.add(it.next());
-        }
+	static Map<Integer, List<Person>> getPersonsByRoomCountImperative(List<Person> persons) {
+		Map<Integer, List<Person>> result = new HashMap<>();
 
-        return result;
-    }
+		for (Person person : persons) {
+			House house = person.getHouse().orElse(null);
 
-    static List<Person> getThreeOldestPersonsFunctional(List<Person> persons) {
-        return exerciceAFaire("Listez les 3 plus vieilles personnes");
-    }
+			if (house != null) {
+				int roomCount = house.getRooms().size();
 
-    static Set<Person> personHavingHouseWithWindowInAllRooms(List<Person> persons) {
-        return exerciceAFaire("Listez les personnes ayant des fenêtres dans toutes les pièces");
-    }
+				List<Person> list = result.get(roomCount);
 
-    static Map<Integer, List<Person>> getPersonsByRoomCountImperative(List<Person> persons) {
-        Map<Integer, List<Person>> result = new HashMap<>();
+				if (list == null) {
+					list = new ArrayList<>();
+					result.put(roomCount, list);
+				}
+				list.add(person);
+			}
+		}
 
-        for (Person person : persons) {
-            House house = person.getHouse().orElse(null);
+		return result;
+	}
 
-            if (house != null) {
-                int roomCount = house.getRooms().size();
+	static Map<Integer, List<Person>> getPersonsByRoomCountFunctional(List<Person> persons) {
+		return persons.stream() //
+				.collect(groupingBy(p -> p.getHouse() //
+						.map(h -> h.getRooms().size()) //
+						.orElse(0)));
+	}
 
-                List<Person> list = result.get(roomCount);
+	static Map<Integer, Long> getPersonCountByRoomCountImperative(List<Person> persons) {
+		Map<Integer, Long> result = new HashMap<>();
 
-                if (list == null) {
-                    list = new ArrayList<>();
-                    result.put(roomCount, list);
-                }
-                list.add(person);
-            }
-        }
+		for (Person person : persons) {
+			House house = person.getHouse().orElse(null);
 
-        return result;
-    }
+			if (house != null) {
+				int roomCount = house.getRooms().size();
 
-    static Map<Integer, List<Person>> getPersonsByRoomCountFunctional(List<Person> persons) {
-        return exerciceAFaire("Groupez les personnes par nombre de pièces. "
-                + "Les personnes qui n'ont pas de maison sont considérées comme ayant 0 pièce");
-    }
+				Long prevCount = result.get(roomCount);
 
-    static Map<Integer, Long> getPersonCountByRoomCountImperative(List<Person> persons) {
-        Map<Integer, Long> result = new HashMap<>();
+				if (prevCount == null) {
+					result.put(roomCount, 1L);
+				} else {
+					result.put(roomCount, prevCount + 1);
+				}
+			}
+		}
 
-        for (Person person : persons) {
-            House house = person.getHouse().orElse(null);
+		return result;
+	}
 
-            if (house != null) {
-                int roomCount = house.getRooms().size();
+	// Les personnes qui n'ont pas de maison sont considérées comme ayant 0
+	// rooms.
+	static Map<Integer, Long> getPersonCountByRoomCountFunctional(List<Person> persons) {
+		return persons.stream()
+				.collect(groupingBy(
+						p -> p.getHouse() //
+								.map(h -> h.getRooms().size()) //
+								.orElse(0), //
+						counting()));
+	}
 
-                Long prevCount = result.get(roomCount);
+	static Map<Integer, IntSummaryStatistics> getPhysicalBedStatisticsBySleepingPlacesImperative(List<Person> persons) {
+		Map<Integer, IntSummaryStatistics> result = new HashMap<>();
 
-                if (prevCount == null) {
-                    result.put(roomCount, 1L);
-                } else {
-                    result.put(roomCount, prevCount + 1);
-                }
-            }
-        }
+		for (Person person : persons) {
+			House house = person.getHouse().orElse(null);
 
-        return result;
-    }
+			if (house != null) {
+				for (Room room : house.getRooms()) {
+					for (Bed bed : room.getBeds()) {
+						int forPersonCount = bed.getForPersonCount();
+						IntSummaryStatistics iss = result.get(forPersonCount);
 
-    // Les personnes qui n'ont pas de maison sont considérées comme ayant 0
-    // rooms.
-    static Map<Integer, Long> getPersonCountByRoomCountFunctional(List<Person> persons) {
-        return exerciceAFaire("Comptez les personnes en fonction du nombre de pièces de leur maison.");
-    }
+						if (iss == null) {
+							iss = new IntSummaryStatistics();
+							result.put(forPersonCount, iss);
+						}
+						iss.accept(forPersonCount);
+					}
+				}
+			}
+		}
 
-    static Map<Integer, IntSummaryStatistics> getPhysicalBedStatisticsBySleepingPlacesImperative(List<Person> persons) {
-        Map<Integer, IntSummaryStatistics> result = new HashMap<>();
+		return result;
+	}
 
-        for (Person person : persons) {
-            House house = person.getHouse().orElse(null);
+	static Map<Integer, IntSummaryStatistics> getPhysicalBedStatisticsBySleepingPlacesFunctional(List<Person> persons) {
+		return persons.stream() //
+				.flatMap(p -> p.getHouse().map(Stream::of).orElseGet(Stream::empty)) //
+				.flatMap(h -> h.getRooms().stream()) //
+				.flatMap(r -> r.getBeds().stream()) //
+				.collect(groupingBy(Bed::getForPersonCount, summarizingInt(Bed::getForPersonCount)));
+	}
 
-            if (house != null) {
-                for (Room room : house.getRooms()) {
-                    for (Bed bed : room.getBeds()) {
-                        int forPersonCount = bed.getForPersonCount();
-                        IntSummaryStatistics iss = result.get(forPersonCount);
+	static Map<Integer, Long> sumOfGardensSurfaceByRoomCountImperative(List<Person> persons) {
+		Map<Integer, Long> result = new HashMap<>();
 
-                        if (iss == null) {
-                            iss = new IntSummaryStatistics();
-                            result.put(forPersonCount, iss);
-                        }
-                        iss.accept(forPersonCount);
-                    }
-                }
-            }
-        }
+		for (Person person : persons) {
+			House house = person.getHouse().orElse(null);
 
-        return result;
-    }
+			if (house != null) {
+				int roomCount = house.getRooms().size();
+				Garden garden = house.getGarden().orElse(null);
 
-    static Map<Integer, IntSummaryStatistics> getPhysicalBedStatisticsBySleepingPlacesFunctional(List<Person> persons) {
-        return exerciceAFaire(
-                "Calculez les stats sur les lits pour chaque nombre de places de couchage dans la maison");
-    }
+				if (garden != null) {
+					long surface = garden.getSurface();
+					Long prevSurface = result.get(roomCount);
 
-    static Map<Integer, Long> sumOfGardensSurfaceByRoomCountImperative(List<Person> persons) {
-        Map<Integer, Long> result = new HashMap<>();
+					if (prevSurface == null) {
+						result.put(roomCount, surface);
+					} else {
+						result.put(roomCount, prevSurface + surface);
+					}
+				}
+			}
+		}
 
-        for (Person person : persons) {
-            House house = person.getHouse().orElse(null);
+		return result;
+	}
 
-            if (house != null) {
-                int roomCount = house.getRooms().size();
-                Garden garden = house.getGarden().orElse(null);
+	// Les personnes qui n'ont pas de maison sont considérées comme ayant 0
+	// rooms.
+	static Map<Integer, Long> sumOfGardensSurfaceByRoomCountFunction(List<Person> persons) {
+		return persons.stream() //
+				.collect(groupingBy(
+						p -> p.getHouse() //
+								.map(h -> h.getRooms().size()) //
+								.orElse(0), //
+						summingLong(p -> p.getHouse() //
+								.flatMap(House::getGarden) //
+								.map(Garden::getSurface) //
+								.orElse(0))));
+	}
 
-                if (garden != null) {
-                    long surface = garden.getSurface();
-                    Long prevSurface = result.get(roomCount);
+	// liste triée des plus vieux par département. Cette liste ne doit **PAS**
+	// contenir le plus vieux.
+	static Map<Integer, List<Person>> getOldestPersonsByDeptUnlessTheOldestImperative(List<Person> persons) {
+		Map<Integer, List<Person>> result = new HashMap<>();
 
-                    if (prevSurface == null) {
-                        result.put(roomCount, surface);
-                    } else {
-                        result.put(roomCount, prevSurface + surface);
-                    }
-                }
-            }
-        }
+		for (Person person : persons) {
+			int dpt = person.getDepartment();
 
-        return result;
-    }
+			List<Person> list = result.get(dpt);
 
-    // Les personnes qui n'ont pas de maison sont considérées comme ayant 0
-    // rooms.
-    static Map<Integer, Long> sumOfGardensSurfaceByRoomCountFunction(List<Person> persons) {
-        return exerciceAFaire("Calculez la somme de surface de jardin par nombre de pièces dans la maison");
-    }
+			if (list == null) {
+				list = new ArrayList<>();
+				result.put(dpt, list);
+			}
+			list.add(person);
+		}
 
-    // liste triée des plus vieux par département. Cette liste ne doit **PAS**
-    // contenir le plus vieux.
-    static Map<Integer, List<Person>> getOldestPersonsByDeptUnlessTheOldestImperative(List<Person> persons) {
-        Map<Integer, List<Person>> result = new HashMap<>();
+		Comparator<Person> cmp = new Comparator<Person>() {
+			@Override
+			public int compare(Person o1, Person o2) {
+				return -Integer.compare(o1.getAge(), o2.getAge());
+			}
+		};
 
-        for (Person person : persons) {
-            int dpt = person.getDepartment();
+		Map<Integer, List<Person>> resultWitoutOldest = new HashMap<>();
 
-            List<Person> list = result.get(dpt);
+		for (Entry<Integer, List<Person>> kv : result.entrySet()) {
+			List<Person> oldestPersons = kv.getValue();
+			Collections.sort(oldestPersons, cmp);
 
-            if (list == null) {
-                list = new ArrayList<>();
-                result.put(dpt, list);
-            }
-            list.add(person);
-        }
+			resultWitoutOldest.put(kv.getKey(), oldestPersons.subList(1, oldestPersons.size()));
+		}
 
-        Comparator<Person> cmp = new Comparator<Person>() {
-            @Override
-            public int compare(Person o1, Person o2) {
-                return -Integer.compare(o1.getAge(), o2.getAge());
-            }
-        };
+		return resultWitoutOldest;
+	}
 
-        Map<Integer, List<Person>> resultWitoutOldest = new HashMap<>();
+	static Map<Integer, List<Person>> getOldestPersonsByDeptUnlessTheOldestFunctional(List<Person> persons) {
+		return persons.stream() //
+				.collect(groupingBy(Person::getDepartment)) //
+				.entrySet().stream() //
+				.map(kv -> fromEntry(kv) //
+						.mapB(ps -> ps.stream() //
+								.sorted(comparing(Person::getAge).reversed()) //
+								.skip(1) //
+								.collect(toList()))) //
+				.collect(toMap(Tuple::getA, Tuple::getB));
+	}
 
-        for (Entry<Integer, List<Person>> kv : result.entrySet()) {
-            List<Person> oldestPersons = kv.getValue();
-            Collections.sort(oldestPersons, cmp);
+	static Map<String, Integer> getSleepingPlacesCountByPersonName(List<Person> persons) {
+		return persons.stream() //
+				.collect(groupingBy(Person::getName, //
+						summingInt(p -> p.getHouse().map(Stream::of).orElseGet(Stream::empty) //
+								.flatMap(h -> h.getRooms().stream()) //
+								.flatMap(r -> r.getBeds().stream()) //
+								.mapToInt(Bed::getForPersonCount) //
+								.sum())));
+	}
 
-            resultWitoutOldest.put(kv.getKey(), oldestPersons.subList(1, oldestPersons.size()));
-        }
+	static List<Bed> bedsOfTheOldestPerson(List<Person> persons) {
+		return persons.stream() //
+				.max(comparingInt(Person::getAge)) //
+				.flatMap(Person::getHouse) //
+				.map(h -> h.getRooms().stream() //
+						.flatMap(r -> r.getBeds().stream()) //
+						.collect(toList())) //
+				.orElseGet(() -> emptyList());
+	}
 
-        return resultWitoutOldest;
-    }
+	static SortedMap<Integer, SortedMap<Integer, List<Person>>> personsByRoomCountDescThenByBedCountDesc(
+			List<Person> persons) {
+		Comparator<Integer> reverseInts = reverseOrder();
 
-    static Map<Integer, List<Person>> getOldestPersonsByDeptUnlessTheOldestFunctional(List<Person> persons) {
-        return exerciceAFaire(
-                "Triez les personnes les plus vieilles personnes par département (en excluant la plus vieille du département)");
-    }
+		return persons.stream() //
+				.collect(groupingBy(
+						p -> p.getHouse() //
+								.map(h -> h.getRooms().size()) //
+								.orElse(0), //
+						() -> new TreeMap<>(reverseInts), //
+						groupingBy(
+								p -> p.getHouse() //
+										.map(h -> h.getRooms().stream() //
+												.mapToInt(r -> r.getBeds().size()) //
+												.sum()) //
+										.orElse(0), //
+								() -> new TreeMap<>(reverseInts), //
+								toList())));
+	}
 
-    static Map<String, Integer> getSleepingPlacesCountByPersonName(List<Person> persons) {
-        return exerciceAFaire("Comptez le nombre de places de couchage pour chaque nom de personne");
-    }
+	static String listingPersonsByRoomCountDescThenByBedCountDesc(List<Person> persons) {
 
-    static List<Bed> bedsOfTheOldestPerson(List<Person> persons) {
-        return exerciceAFaire("Listez les lits de la plus vieille personne");
-    }
+		SortedMap<Integer, SortedMap<Integer, List<Person>>> groupedPersons = personsByRoomCountDescThenByBedCountDesc(
+				persons);
 
-    static SortedMap<Integer, SortedMap<Integer, List<Person>>> personsByRoomCountDescThenByBedCountDesc(
-            List<Person> persons) {
-        return exerciceAFaire(
-                "Groupez les personnes par nombre de pièce descendant puis par nombre de lits descendant");
-    }
+		return groupedPersons.entrySet().stream() //
+				.flatMap(kv1 -> concat(Stream.of("- " + kv1.getKey() + " rooms"),
+						kv1.getValue().entrySet().stream() //
+								.flatMap(kv2 -> concat(Stream.of("  - " + kv2.getKey() + " beds"),
+										kv2.getValue().stream() //
+												.map(p -> "    - " + p.getName() + " (" + p.getAge() + " ans)")))))
+				.collect(joining("\n"));
+	}
 
-    static String listingPersonsByRoomCountDescThenByBedCountDesc(List<Person> persons) {
-
-        SortedMap<Integer, SortedMap<Integer, List<Person>>> groupedPersons = personsByRoomCountDescThenByBedCountDesc(
-                persons);
-
-        return exerciceAFaire("Ecrire une liste indentée de du groupement précédent");
-    }
-
-    static Map<Integer, Set<Person>> getPersonsByDeptOf5SleepingPlacesMinimum(List<Person> persons) {
-        return exerciceAFaire("Listez par département les personnes ayant au moins 5 places de couchage");
-    }
+	static Map<Integer, Set<Person>> getPersonsByDeptOf5SleepingPlacesMinimum(List<Person> persons) {
+		return persons.stream() //
+				.collect(groupingBy(Person::getDepartment, toSet())) //
+				.entrySet().stream() //
+				.filter(kv -> kv.getValue().stream()//
+						.mapToInt(p -> p.getHouse() //
+								.map(h -> h.getRooms().stream() //
+										.flatMap(r -> r.getBeds().stream()) //
+										.mapToInt(Bed::getForPersonCount) //
+										.sum()) //
+								.orElse(0)) //
+						.sum() >= 5) //
+				.collect(toMap(Entry::getKey, Entry::getValue));
+	}
 }

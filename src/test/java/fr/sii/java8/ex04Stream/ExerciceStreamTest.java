@@ -1,8 +1,6 @@
 package fr.sii.java8.ex04Stream;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +11,7 @@ import static fr.sii.java8.ex04Stream.ExerciceStream.*;
 import static java.util.stream.Collectors.joining;
 
 public class ExerciceStreamTest extends BaseTest {
+
 
     @Test
     public void testGetPersonsByRoomCount() {

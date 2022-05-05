@@ -1,12 +1,10 @@
 package fr.sii.java8.ex04Stream;
 
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
 
 public class ExerciceStreamTestPlus extends ExerciceStreamTest {
 

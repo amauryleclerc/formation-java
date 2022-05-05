@@ -1,13 +1,12 @@
 package fr.sii.java8.ex02Optional;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 
 import static fr.sii.java8.ex02Optional.ExerciceOptional.*;
 import static org.junit.Assert.*;
 
 public class ExerciceOptionalTest {
+
 
     private Person HOMELESS = new Person("John le globe trotter", 30, null);
 

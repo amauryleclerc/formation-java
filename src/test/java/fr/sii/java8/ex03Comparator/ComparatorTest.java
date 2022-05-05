@@ -1,8 +1,6 @@
 package fr.sii.java8.ex03Comparator;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 
 import java.util.Comparator;
 import java.util.List;

@@ -35,6 +35,9 @@ public class ExerciceStream {
                 plusVieux = p;
             }
         }
+        if(plusVieux == null){
+            return 0;
+        }
 
         return plusVieux.getName().length();
     }
@@ -139,18 +142,17 @@ public class ExerciceStream {
 
         for (Person person : persons) {
             House house = person.getHouse().orElse(null);
-
+            int roomCount = 0;
             if (house != null) {
-                int roomCount = house.getRooms().size();
-
-                List<Person> list = result.get(roomCount);
-
-                if (list == null) {
-                    list = new ArrayList<>();
-                    result.put(roomCount, list);
-                }
-                list.add(person);
+                roomCount = house.getRooms().size();
             }
+            List<Person> list = result.get(roomCount);
+
+            if (list == null) {
+                list = new ArrayList<>();
+                result.put(roomCount, list);
+            }
+            list.add(person);
         }
 
         return result;
@@ -167,16 +169,16 @@ public class ExerciceStream {
         for (Person person : persons) {
             House house = person.getHouse().orElse(null);
 
+            int roomCount = 0 ;
             if (house != null) {
-                int roomCount = house.getRooms().size();
+                roomCount = house.getRooms().size();
+            }
+            Long prevCount = result.get(roomCount);
 
-                Long prevCount = result.get(roomCount);
-
-                if (prevCount == null) {
-                    result.put(roomCount, 1L);
-                } else {
-                    result.put(roomCount, prevCount + 1);
-                }
+            if (prevCount == null) {
+                result.put(roomCount, 1L);
+            } else {
+                result.put(roomCount, prevCount + 1);
             }
         }
 
@@ -225,20 +227,23 @@ public class ExerciceStream {
         for (Person person : persons) {
             House house = person.getHouse().orElse(null);
 
+            int roomCount = 0;
+            long surface=0;
             if (house != null) {
-                int roomCount = house.getRooms().size();
+                roomCount = house.getRooms().size();
                 Garden garden = house.getGarden().orElse(null);
 
                 if (garden != null) {
-                    long surface = garden.getSurface();
-                    Long prevSurface = result.get(roomCount);
+                    surface = garden.getSurface();
 
-                    if (prevSurface == null) {
-                        result.put(roomCount, surface);
-                    } else {
-                        result.put(roomCount, prevSurface + surface);
-                    }
                 }
+            }
+            Long prevSurface = result.get(roomCount);
+
+            if (prevSurface == null) {
+                result.put(roomCount, surface);
+            } else {
+                result.put(roomCount, prevSurface + surface);
             }
         }
 

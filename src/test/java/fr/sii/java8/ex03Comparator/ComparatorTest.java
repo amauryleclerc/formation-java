@@ -1,5 +1,10 @@
 package fr.sii.java8.ex03Comparator;
 
+import org.junit.Test;
+
+import java.util.Comparator;
+import java.util.List;
+
 import static fr.sii.java8.utils.ExerciceAFaireException.exerciceAFaire;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;

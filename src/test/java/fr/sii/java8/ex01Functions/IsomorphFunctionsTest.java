@@ -24,31 +24,31 @@ public class IsomorphFunctionsTest extends FunctionChecker {
 		check(FileFilter.class, "Predicate<File>");
 		check(FileFilter.class, "Function<File, Boolean>");
 
-		check(FilenameFilter.class, "");
-		check(FilenameFilter.class, "");
+		check(FilenameFilter.class, "BiFunction<File,String,Boolean>");
+		check(FilenameFilter.class, "BiPredicate<File,String>");
 
-		check(UncaughtExceptionHandler.class, "");
+		check(UncaughtExceptionHandler.class, "BiConsumer<Thread,Throwable>");
 
-		check(Filter.class, "");
-		check(Filter.class, "");
+		check(Filter.class, "Function<LogRecord,Boolean>");
+		check(Filter.class, "Predicate<LogRecord>");
 
-		check(PathMatcher.class, "");
-		check(PathMatcher.class, "");
+		check(PathMatcher.class, "Function<Path,Boolean>");
+		check(PathMatcher.class, "Predicate<Path>");
 
-		check(TemporalAdjuster.class, "");
-		check(TemporalAdjuster.class, "");
+		check(TemporalAdjuster.class, "Function<Temporal,Temporal>");
+		check(TemporalAdjuster.class, "UnaryOperator<Temporal>");
 
 		// Utilisez le type R.
-		check(TemporalQuery.class, "");
+		check(TemporalQuery.class, "Function<TemporalAccessor,R>");
 
 		// Utilisez le type T.
 		check(Comparator.class, "BiFunction<T,T,Integer>");
-		check(Comparator.class, "");
+		check(Comparator.class, "ToIntBiFunction<T,T>");
 
 		// Utilisez le type V.
-		check(Callable.class, "");
+		check(Callable.class, "Supplier<V>");
 
-		check(PreferenceChangeListener.class, "");
+		check(PreferenceChangeListener.class, "Consumer<PreferenceChangeEvent>");
 	}
 
 }

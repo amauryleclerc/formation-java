@@ -11,15 +11,33 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Comparator;
+import java.util.List;
+
+import org.junit.Test;
+
 public class ComparatorTest extends BaseTest {
 
-    final List<String> strings = unmodifiableList(
-            asList("David Gilmour", "Roger Waters", "Syd Barrett", "Richard Wright", "David Waters", "Nick Mason"));
+	final List<String> strings = unmodifiableList(
+			asList("David Gilmour", "Roger Waters", "Syd Barrett", "Richard Wright", "David Waters", "Nick Mason"));
 
-    @Test
-    public void testCompare1() {
-        Comparator<String> parNomPrenom = exerciceAFaire(
-                "Ecrire le Comparator comparant par Nom ascendant puis Prenom ascendant");
+	private String getLastName(String v) {
+		return split(v, 1);
+	}
+	private String getFirstName(String v) {
+		return split(v, 0);
+	}
+
+	private String split(String v, int index) {
+		return v.split(" ")[index];
+	}
+
+	@Test
+	public void testCompare1() {
+//		Comparator<String> parNomPrenom = exerciceAFaire(
+//				"Ecrire le Comparator comparant par Nom ascendant puis Prenom ascendant");
+
+		Comparator<String> parNomPrenom = Comparator.comparing(this::getLastName).thenComparing(this::getFirstName);
 
         List<String> sortedNomPrenom = sorted(strings, parNomPrenom);
 

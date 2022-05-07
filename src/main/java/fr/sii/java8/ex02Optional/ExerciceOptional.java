@@ -1,11 +1,15 @@
 package fr.sii.java8.ex02Optional;
 
+import java.util.Optional;
+
 import static fr.sii.java8.utils.ExerciceAFaireException.exerciceAFaire;
+import static fr.sii.java8.utils.LangUtils.ifPresentOrElse;
+import static java.util.Optional.ofNullable;
 
 class ExerciceOptional {
 
-    public static boolean FOOT_IN_THE_GARDEN;
-    public static boolean PLAY_STATION;
+	public static boolean FOOT_IN_THE_GARDEN;
+	public static boolean PLAY_STATION;
 
     static String getNameLabelImperative(Person person) {
         String result;

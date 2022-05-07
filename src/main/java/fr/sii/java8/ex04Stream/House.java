@@ -1,9 +1,9 @@
 package fr.sii.java8.ex04Stream;
 
+import static java.util.Arrays.asList;
+
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.Arrays.asList;
 
 final class House {
     private final Optional<Garden> garden;

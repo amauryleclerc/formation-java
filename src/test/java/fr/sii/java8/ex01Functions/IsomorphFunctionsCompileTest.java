@@ -25,6 +25,9 @@ import java.util.function.Predicate;
 //import java.util.logging.LogRecord;
 //import java.util.prefs.PreferenceChangeEvent;
 //import java.util.prefs.PreferenceChangeListener;
+import java.util.function.Predicate;
+
+import org.junit.Test;
 
 public class IsomorphFunctionsCompileTest extends FunctionChecker {
 

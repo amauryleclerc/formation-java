@@ -93,9 +93,9 @@ public class ExerciceStream {
             House house = person.getHouse().orElse(null);
 
             if (house != null) {
-                for (Room room : house.getRooms()) {
-                    if (room.getWindowCount() > 0) {
-                        result += room.getBeds().size();
+                for (Room room : house.rooms()) {
+                    if (room.windowCount() > 0) {
+                        result += room.beds().size();
                     }
                 }
             }
@@ -144,7 +144,7 @@ public class ExerciceStream {
             House house = person.getHouse().orElse(null);
             int roomCount = 0;
             if (house != null) {
-                roomCount = house.getRooms().size();
+                roomCount = house.rooms().size();
             }
             List<Person> list = result.get(roomCount);
 
@@ -171,7 +171,7 @@ public class ExerciceStream {
 
             int roomCount = 0 ;
             if (house != null) {
-                roomCount = house.getRooms().size();
+                roomCount = house.rooms().size();
             }
             Long prevCount = result.get(roomCount);
 
@@ -198,9 +198,9 @@ public class ExerciceStream {
             House house = person.getHouse().orElse(null);
 
             if (house != null) {
-                for (Room room : house.getRooms()) {
-                    for (Bed bed : room.getBeds()) {
-                        int forPersonCount = bed.getForPersonCount();
+                for (Room room : house.rooms()) {
+                    for (Bed bed : room.beds()) {
+                        int forPersonCount = bed.forPersonCount();
                         IntSummaryStatistics iss = result.get(forPersonCount);
 
                         if (iss == null) {
@@ -230,11 +230,11 @@ public class ExerciceStream {
             int roomCount = 0;
             long surface=0;
             if (house != null) {
-                roomCount = house.getRooms().size();
-                Garden garden = house.getGarden().orElse(null);
+                roomCount = house.rooms().size();
+                Garden garden = house.garden().orElse(null);
 
                 if (garden != null) {
-                    surface = garden.getSurface();
+                    surface = garden.surface();
 
                 }
             }

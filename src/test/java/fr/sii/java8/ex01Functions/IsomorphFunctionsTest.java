@@ -16,41 +16,43 @@ import java.util.concurrent.Callable;
 import java.util.logging.Filter;
 import java.util.prefs.PreferenceChangeListener;
 
+import static org.junit.Assert.assertTrue;
+
 public class IsomorphFunctionsTest extends FunctionChecker {
 
     @Test
     public void test() {
-        check(KeyEventDispatcher.class, "Function<KeyEvent, Boolean>");
-        check(KeyEventDispatcher.class, "Predicate<KeyEvent>");
+        assertTrue(check(KeyEventDispatcher.class, "Function<KeyEvent, Boolean>"));
+        assertTrue(check(KeyEventDispatcher.class, "Predicate<KeyEvent>"));
 
-        check(FileFilter.class, "Function<File, Boolean>");
-        check(FileFilter.class, "Predicate<File>");
+        assertTrue(check(FileFilter.class, "Function<File, Boolean>"));
+        assertTrue(check(FileFilter.class, "Predicate<File>"));
 
-        check(FilenameFilter.class, "");
-        check(FilenameFilter.class, "");
+        assertTrue(check(FilenameFilter.class, ""));
+        assertTrue(check(FilenameFilter.class, ""));
 
-        check(UncaughtExceptionHandler.class, "");
+        assertTrue(check(UncaughtExceptionHandler.class, ""));
 
-        check(Filter.class, "");
-        check(Filter.class, "");
+        assertTrue(check(Filter.class, ""));
+        assertTrue(check(Filter.class, ""));
 
-        check(PathMatcher.class, "");
-        check(PathMatcher.class, "");
+        assertTrue(check(PathMatcher.class, ""));
+        assertTrue(check(PathMatcher.class, ""));
 
-        check(TemporalAdjuster.class, "");
-        check(TemporalAdjuster.class, "");
+        assertTrue(check(TemporalAdjuster.class, ""));
+        assertTrue(check(TemporalAdjuster.class, ""));
 
         // Utilisez le type R.
-        check(TemporalQuery.class, "");
+        assertTrue(check(TemporalQuery.class, ""));
 
         // Utilisez le type T.
-        check(Comparator.class, "");
-        check(Comparator.class, "");
+        assertTrue(check(Comparator.class, ""));
+        assertTrue(check(Comparator.class, ""));
 
         // Utilisez le type V.
-        check(Callable.class, "");
+        assertTrue(check(Callable.class, ""));
 
-        check(PreferenceChangeListener.class, "");
+        assertTrue(check(PreferenceChangeListener.class, ""));
     }
 
 }

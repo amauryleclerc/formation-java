@@ -22,7 +22,7 @@ public class ExerciceOptionalTest {
 
 	@Test
 	public void testGetNameLabel() {
-		String expected = "le nom est : " + HOMELESS.getName();
+		String expected = "le nom est : " + HOMELESS.name();
 
 		assertEquals(expected, getNameLabelImperative(HOMELESS));
 		assertEquals(expected, getNameLabelFunctional(HOMELESS));

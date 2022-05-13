@@ -89,7 +89,7 @@ public class BaseTest {
 	protected <K, V, T> Map<K, T> mapMapValues(Map<K, V> map, Function<V, T> f) {
 		return map.entrySet().stream() //
 				.map(kv -> Tuple.fromEntry(kv).mapB(f)) //
-				.collect(toMap(Tuple::getA, Tuple::getB));
+				.collect(toMap(Tuple::a, Tuple::b));
 	}
 
 	protected <C extends Collection<Person>> Function<C, Set<String>> toPersonNamesSet() {

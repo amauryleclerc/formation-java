@@ -1,10 +1,6 @@
 package fr.sii.java8.ex02Optional;
 
-import java.util.Optional;
-
 import static fr.sii.java8.utils.ExerciceAFaireException.exerciceAFaire;
-import static fr.sii.java8.utils.LangUtils.ifPresentOrElse;
-import static java.util.Optional.ofNullable;
 
 class ExerciceOptional {
 
@@ -15,7 +11,7 @@ class ExerciceOptional {
         String result;
 
         if (person != null) {
-            result = "le nom est : " + person.getName();
+            result = "le nom est : " + person.name();
         } else {
             result = "il n'y a persone !";
         }
@@ -31,7 +27,7 @@ class ExerciceOptional {
         int taxe = 10;
 
         if (person != null) {
-            House house = person.getHouse();
+            House house = person.house();
 
             if (house != null) {
                 int roomCount = house.getRoomCount();
@@ -52,7 +48,7 @@ class ExerciceOptional {
     static void startPlayingImperative(Person person) {
 
         if (person != null) {
-            House house = person.getHouse();
+            House house = person.house();
 
             if (house != null) {
                 Garden garden = house.getGarden();

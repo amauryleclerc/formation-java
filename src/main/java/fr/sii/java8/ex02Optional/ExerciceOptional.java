@@ -24,7 +24,7 @@ class ExerciceOptional {
 
     static String getNameLabelFunctional(Person person) {
         return ofNullable(person) //
-                .map(p -> "le nom est : " + p.getName()) //
+                .map(p -> "le nom est : " + p.name()) //
                 .orElse("il n'y a persone !");
     }
 

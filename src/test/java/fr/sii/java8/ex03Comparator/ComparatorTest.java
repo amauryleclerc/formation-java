@@ -18,8 +18,7 @@ import org.junit.Test;
 
 public class ComparatorTest extends BaseTest {
 
-	final List<String> strings = unmodifiableList(
-			asList("David Gilmour", "Roger Waters", "Syd Barrett", "Richard Wright", "David Waters", "Nick Mason"));
+	final List<String> strings = List.of("David Gilmour", "Roger Waters", "Syd Barrett", "Richard Wright", "David Waters", "Nick Mason");
 
 	private String getLastName(String v) {
 		return split(v, 1);
